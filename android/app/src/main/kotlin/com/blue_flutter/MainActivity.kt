@@ -72,7 +72,7 @@ class MainActivity: FlutterActivity(), Runnable{
                 val address = call.argument<String>("address")
 
                 mBluetoothDevice = mBluetoothAdapter?.getRemoteDevice(address)
-                result.success("name is ${mBluetoothDevice?.name} and address is ${mBluetoothDevice.address}")
+                result.success("name is ${mBluetoothDevice?.name} and address is ${mBluetoothDevice?.address}")
             }else{
                 result.notImplemented()
             }
