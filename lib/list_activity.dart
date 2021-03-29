@@ -87,16 +87,12 @@ class _ListActivityState extends State<ListActivity> {
 
   Future<void> pairPrinterNative(String name, String address) async {
     try {
-      bool result = await platform.invokeMethod('pairPrinter', {
+      String result = await platform.invokeMethod('pairPrinter', {
         "name" : name,
         "address": address
       });
 
-      if(result == true){
-        setState(() {
-          isSwitched = false;
-        });
-      }
+      print('result from pair is $result');
 
     } on PlatformException catch (e) {
       print("Failed to Invoke: '${e.message}'.");
