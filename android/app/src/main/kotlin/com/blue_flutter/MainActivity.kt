@@ -1,10 +1,14 @@
 package com.blue_flutter
 
+import android.app.Activity
+import android.app.ProgressDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -20,6 +24,7 @@ class MainActivity: FlutterActivity(), Runnable{
     var mBluetoothDevice: BluetoothDevice? = null
     var mBluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     private val REQUEST_ENABLE_BT = 2
+    private var bluetoothEnabled = false
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -32,7 +37,11 @@ class MainActivity: FlutterActivity(), Runnable{
                 }else{
                     if(!mBluetoothAdapter!!.isEnabled){
                         startActivityForResult(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), 1)
-                        result.success(true)
+                        if(bluetoothEnabled){
+                            result.success(true)
+                        }else{
+                            result.success(false)
+                        }
                     }
                 }
 
@@ -72,6 +81,24 @@ class MainActivity: FlutterActivity(), Runnable{
             return
         }
     }
+
+    private fun changedBlueToothEnabled() : Boolean{
+        return bluetoothEnabled
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+     when(requestCode){
+         1 -> {
+             if(requestCode == Activity.RESULT_OK){
+                 bluetoothEnabled = true
+             }else{
+                 bluetoothEnabled = false
+             }
+         }
+     }
+    }
+
 
     private fun closeSocket(nOpenSocket: BluetoothSocket) {
         try {
