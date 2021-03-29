@@ -69,7 +69,6 @@ class MainActivity: FlutterActivity(){
                 }
             }else if(call.method == "pairPrinter"){
 
-                val name = call.argument<String>("name")
                 val address = call.argument<String>("address")
 
                 mBluetoothDevice = mBluetoothAdapter?.getRemoteDevice(address)

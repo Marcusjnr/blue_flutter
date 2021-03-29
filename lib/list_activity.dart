@@ -12,6 +12,7 @@ class _ListActivityState extends State<ListActivity> {
   String deviceName = 'No Devices';
   static const platform = const MethodChannel('flutter.native/helper');
   List availableBluetoothDevices = [];
+  bool progressBarVisible = false;
 
   @override
   void initState() {
@@ -21,7 +22,6 @@ class _ListActivityState extends State<ListActivity> {
 
   Future<void> getBluetooth() async {
     final List bluetooths = await BluetoothThermalPrinter.getBluetooths;
-    print("Print bluetooth $bluetooths");
     setState(() {
       availableBluetoothDevices = bluetooths;
     });
@@ -86,12 +86,25 @@ class _ListActivityState extends State<ListActivity> {
   }
 
   Future<void> pairPrinterNative(String name, String address) async {
+    setState(() {
+      progressBarVisible = true;
+    });
     try {
-      String result = await platform.invokeMethod('pairPrinter', {
-        "name" : name,
+      bool result = await platform.invokeMethod('pairPrinter', {
         "address": address
       });
+      print('result from pair printer is $result');
+      if(result == true){
+        setState(() {
+          progressBarVisible = false;
+        });
 
+      }else{
+        setState(() {
+          progressBarVisible = false;
+        });
+        print('could not connect to device');
+      }
       print('result from pair is $result');
 
     } on PlatformException catch (e) {
@@ -174,39 +187,38 @@ class _ListActivityState extends State<ListActivity> {
                 ],
               ),
             ),
+            Visibility(
+              visible: progressBarVisible,
+              child: Container(
+                child: Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                  ),
+                ),
+                width: 40,
+                height: 40,
+              ),
+            ),
 
             Expanded(
-                child: Column(
-                  children: [
-                    Container(
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                        ),
-                      ),
-                      width: 40,
-                      height: 40,
-                    ),
-                    ListView.builder(
-                      itemCount: availableBluetoothDevices.length > 0
-                          ? availableBluetoothDevices.length
-                          : 0,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          onTap: () {
-                            String select = availableBluetoothDevices[index];
-                            List list = select.split("#");
-                            String name = list[0];
-                            String mac = list[1];
-                            pairPrinterNative(name, mac);
-                          },
-                          title: Text('${availableBluetoothDevices[index]}'),
-                          subtitle: Text("Click to connect"),
-                        );
-                      },
-                    )
-                  ],
-                ),
+              child: ListView.builder(
+                itemCount: availableBluetoothDevices.length > 0
+                    ? availableBluetoothDevices.length
+                    : 0,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    onTap: () {
+                      String select = availableBluetoothDevices[index];
+                      List list = select.split("#");
+                      String name = list[0];
+                      String mac = list[1];
+                      pairPrinterNative(name, mac);
+                    },
+                    title: Text('${availableBluetoothDevices[index]}'),
+                    subtitle: Text("Click to connect"),
+                  );
+                },
+              ),
             )
           ],
         ),
