@@ -20,6 +20,8 @@ class _ListActivityState extends State<ListActivity> {
   Future<void> blueToothEnableNative() async {
     try {
       bool result = await platform.invokeMethod('bluetoothEnable');
+
+      print('enable native is $result');
       if(result == true){
         setState(() {
           isSwitched = true;
@@ -52,7 +54,16 @@ class _ListActivityState extends State<ListActivity> {
 
   Future<void> blueToothCheckEnabledNative() async {
     try {
-      isSwitched = await platform.invokeMethod('checkIfEnabled');
+     bool result = await platform.invokeMethod('checkIfEnabled');
+     if(result == true){
+       setState(() {
+         isSwitched = true;
+       });
+     }else{
+       isSwitched = false;
+     }
+
+      print('is switchd is $isSwitched');
     } on PlatformException catch (e) {
       print("Failed to Invoke: '${e.message}'.");
     }
