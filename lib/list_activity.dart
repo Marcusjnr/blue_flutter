@@ -85,6 +85,25 @@ class _ListActivityState extends State<ListActivity> {
 
   }
 
+  Future<void> pairPrinterNative(String name, String address) async {
+    try {
+      bool result = await platform.invokeMethod('pairPrinter', {
+        "name" : name,
+        "address": address
+      });
+
+      if(result == true){
+        setState(() {
+          isSwitched = false;
+        });
+      }
+
+    } on PlatformException catch (e) {
+      print("Failed to Invoke: '${e.message}'.");
+    }
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -172,7 +191,7 @@ class _ListActivityState extends State<ListActivity> {
                         List list = select.split("#");
                         String name = list[0];
                         String mac = list[1];
-                        //setPrinterNative(name, mac);
+                        pairPrinterNative(name, mac);
                       },
                       title: Text('${availableBluetoothDevices[index]}'),
                       subtitle: Text("Click to connect"),

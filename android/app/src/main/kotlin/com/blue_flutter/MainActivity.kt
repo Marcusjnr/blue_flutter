@@ -66,6 +66,13 @@ class MainActivity: FlutterActivity(), Runnable{
                 }else{
                     result.success(false)
                 }
+            }else if(call.method == "pairPrinter"){
+
+                val name = call.argument<String>("name")
+                val address = call.argument<String>("address")
+
+                mBluetoothDevice = mBluetoothAdapter?.getRemoteDevice(address)
+                result.success("name is ${mBluetoothDevice?.name} and address is ${mBluetoothDevice.address}")
             }else{
                 result.notImplemented()
             }
