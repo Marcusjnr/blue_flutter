@@ -19,14 +19,17 @@ class _ListActivityState extends State<ListActivity> {
 
   Future<void> blueToothEnableNative() async {
     try {
-      bool result = await platform.invokeMethod('bluetoothEnable');
+      await platform.invokeMethod('bluetoothEnable');
 
-      print('enable native is $result');
-      if(result == true){
+      bool blueStatus = await platform.invokeMethod('blueToothStatus');
+
+
+      if(blueStatus == true){
         setState(() {
           isSwitched = true;
         });
       }else{
+        isSwitched = false;
         print("Bluetooth not supported");
       }
 
