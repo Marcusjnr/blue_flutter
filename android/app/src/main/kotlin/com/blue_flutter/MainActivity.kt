@@ -59,6 +59,7 @@ class MainActivity: FlutterActivity(), Runnable{
 
                 mBluetoothAdapter?.disable()
                 result.success(true)
+
             }else if(call.method == "blueToothStatus"){
                 if(changedBlueToothEnabled()){
                     result.success(true)

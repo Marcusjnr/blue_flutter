@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:bluetooth_thermal_printer/bluetooth_thermal_printer.dart';
 
 class ListActivity extends StatefulWidget {
   @override
@@ -10,11 +11,20 @@ class _ListActivityState extends State<ListActivity> {
   bool isSwitched = false;
   String deviceName = 'No Devices';
   static const platform = const MethodChannel('flutter.native/helper');
+  List availableBluetoothDevices = [];
 
   @override
   void initState() {
     blueToothCheckEnabledNative();
     super.initState();
+  }
+
+  Future<void> getBluetooth() async {
+    final List bluetooths = await BluetoothThermalPrinter.getBluetooths;
+    print("Print bluetooth $bluetooths");
+    setState(() {
+      availableBluetoothDevices = bluetooths;
+    });
   }
 
   Future<void> blueToothEnableNative() async {
@@ -28,6 +38,7 @@ class _ListActivityState extends State<ListActivity> {
         setState(() {
           isSwitched = true;
         });
+        getBluetooth();
       }else{
         isSwitched = false;
         print("Bluetooth not supported");
@@ -62,6 +73,7 @@ class _ListActivityState extends State<ListActivity> {
        setState(() {
          isSwitched = true;
        });
+       getBluetooth();
      }else{
        isSwitched = false;
      }
@@ -149,9 +161,24 @@ class _ListActivityState extends State<ListActivity> {
             ),
 
             Expanded(
-                child: ListView(
-
-                )
+                child: ListView.builder(
+                  itemCount: availableBluetoothDevices.length > 0
+                      ? availableBluetoothDevices.length
+                      : 0,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      onTap: () {
+                        String select = availableBluetoothDevices[index];
+                        List list = select.split("#");
+                        String name = list[0];
+                        String mac = list[1];
+                        //setPrinterNative(name, mac);
+                      },
+                      title: Text('${availableBluetoothDevices[index]}'),
+                      subtitle: Text("Click to connect"),
+                    );
+                  },
+                ),
             )
           ],
         ),
