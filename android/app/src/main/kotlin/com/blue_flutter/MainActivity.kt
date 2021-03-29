@@ -1,14 +1,15 @@
 package com.blue_flutter
 
+import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.ProgressDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
+import android.os.Handler
+import android.os.Message
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -16,7 +17,7 @@ import io.flutter.plugin.common.MethodChannel
 import java.io.IOException
 import java.util.*
 
-class MainActivity: FlutterActivity(), Runnable{
+class MainActivity: FlutterActivity(){
     private val CHANNEL = "flutter.native/helper"
     private val applicationUUID = UUID
             .fromString("00001101-0000-1000-8000-00805F9B34FB")
@@ -72,29 +73,29 @@ class MainActivity: FlutterActivity(), Runnable{
                 val address = call.argument<String>("address")
 
                 mBluetoothDevice = mBluetoothAdapter?.getRemoteDevice(address)
-                result.success("name is ${mBluetoothDevice?.name} and address is ${mBluetoothDevice?.address}")
+                try {
+                    mBluetoothSocket = mBluetoothDevice
+                            ?.createRfcommSocketToServiceRecord(applicationUUID)
+                    mBluetoothAdapter?.cancelDiscovery()
+                    mBluetoothSocket?.connect()
+                    result.success(true)
+                }catch (eConnectException: IOException){
+                    closeSocket(mBluetoothSocket!!)
+                    result.success(false)
+                }
+                //result.success("name is ${mBluetoothDevice?.name} and address is ${mBluetoothDevice?.address}")
             }else{
                 result.notImplemented()
             }
         }
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
     }
 
-    override fun run() {
-        try {
-            mBluetoothSocket = mBluetoothDevice
-                    ?.createRfcommSocketToServiceRecord(applicationUUID)
-            mBluetoothAdapter?.cancelDiscovery()
-            mBluetoothSocket?.connect()
-        } catch (eConnectException: IOException) {
-            closeSocket(mBluetoothSocket!!)
-            return
-        }
-    }
 
     private fun changedBlueToothEnabled() : Boolean{
         return bluetoothEnabled

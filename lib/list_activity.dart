@@ -176,23 +176,36 @@ class _ListActivityState extends State<ListActivity> {
             ),
 
             Expanded(
-                child: ListView.builder(
-                  itemCount: availableBluetoothDevices.length > 0
-                      ? availableBluetoothDevices.length
-                      : 0,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      onTap: () {
-                        String select = availableBluetoothDevices[index];
-                        List list = select.split("#");
-                        String name = list[0];
-                        String mac = list[1];
-                        pairPrinterNative(name, mac);
+                child: Column(
+                  children: [
+                    Container(
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                        ),
+                      ),
+                      width: 40,
+                      height: 40,
+                    ),
+                    ListView.builder(
+                      itemCount: availableBluetoothDevices.length > 0
+                          ? availableBluetoothDevices.length
+                          : 0,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          onTap: () {
+                            String select = availableBluetoothDevices[index];
+                            List list = select.split("#");
+                            String name = list[0];
+                            String mac = list[1];
+                            pairPrinterNative(name, mac);
+                          },
+                          title: Text('${availableBluetoothDevices[index]}'),
+                          subtitle: Text("Click to connect"),
+                        );
                       },
-                      title: Text('${availableBluetoothDevices[index]}'),
-                      subtitle: Text("Click to connect"),
-                    );
-                  },
+                    )
+                  ],
                 ),
             )
           ],
