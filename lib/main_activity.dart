@@ -12,30 +12,7 @@ class MainActivity extends StatefulWidget {
 class _MainActivityState extends State<MainActivity> {
   static const platform = const MethodChannel('flutter.native/helper');
 
-
-  Future<void> checkBlueToothDeviceConnectedNative() async {
-    try {
-      bool result = await platform.invokeMethod('checkBluetoothDeviceConnected');
-
-      if(result == true){
-
-       // printNative();
-      }else{
-        Navigator.push(
-          context,
-          // ignore: always_specify_types
-          MaterialPageRoute(
-            builder: (context) => ListActivity(),
-          ),
-        );
-      }
-
-    } on PlatformException catch (e) {
-      print("Failed to Invoke: '${e.message}'.");
-    }
-
-  }
-
+  
   Future<void> printNative() async {
     if(Provider.of<AppProvider>(context, listen: false).printerName.isEmpty
         && Provider.of<AppProvider>(context, listen: false).printerAddress.isEmpty ){
@@ -92,7 +69,7 @@ class _MainActivityState extends State<MainActivity> {
             MaterialButton(
               color: Colors.blue,
               onPressed: (){
-                checkBlueToothDeviceConnectedNative();
+                printNative();
               },
               child: Text(
                   'Print'
