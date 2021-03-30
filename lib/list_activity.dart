@@ -98,12 +98,27 @@ class _ListActivityState extends State<ListActivity> {
         setState(() {
           progressBarVisible = false;
         });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            'Connected',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.green,
+        ));
 
       }else{
         setState(() {
           progressBarVisible = false;
         });
         print('could not connect to device');
+
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+              'Could not connect to device',
+              style: TextStyle(color: Colors.white),
+            ),
+          backgroundColor: Colors.red,
+        ));
       }
       print('result from pair is $result');
 
