@@ -48,7 +48,7 @@ class _MainActivityState extends State<MainActivity> {
       );
       return;
     }
-    
+
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(
         'Printing',
