@@ -50,6 +50,7 @@ class _ListActivityState extends State<ListActivity> {
 
   }
 
+
   Future<void> blueToothDisableNative() async {
     try {
       bool result = await platform.invokeMethod('blueToothDisable');
