@@ -6,7 +6,6 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
@@ -17,7 +16,7 @@ import io.flutter.plugin.common.MethodChannel
 import java.io.IOException
 import java.util.*
 
-class MainActivity: FlutterActivity(){
+class MainActivity: FlutterActivity(), Runnable {
     private val CHANNEL = "flutter.native/helper"
     private val applicationUUID = UUID
             .fromString("00001101-0000-1000-8000-00805F9B34FB")
@@ -26,6 +25,7 @@ class MainActivity: FlutterActivity(){
     var mBluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     private val REQUEST_ENABLE_BT = 2
     private var bluetoothEnabled = false
+    private var  mHandler: Handler? = null
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -72,15 +72,21 @@ class MainActivity: FlutterActivity(){
                 val address = call.argument<String>("address")
 
                 mBluetoothDevice = mBluetoothAdapter?.getRemoteDevice(address)
-                try {
-                    mBluetoothSocket = mBluetoothDevice
-                            ?.createRfcommSocketToServiceRecord(applicationUUID)
-                    mBluetoothAdapter?.cancelDiscovery()
-                    mBluetoothSocket?.connect()
-                    result.success(true)
-                }catch (eConnectException: IOException){
-                    closeSocket(mBluetoothSocket!!)
-                    result.success(false)
+
+                val mBlutoothConnectThread = Thread(this)
+                mBlutoothConnectThread.start()
+
+                @SuppressLint("HandlerLeak")
+                mHandler = object : Handler() {
+                    override fun handleMessage(msg: Message) {
+                        val status = msg.obj as String
+                        if(status == "good"){
+                            result.success(true)
+                        }else{
+                            result.success(false)
+                        }
+
+                    }
                 }
                 //result.success("name is ${mBluetoothDevice?.name} and address is ${mBluetoothDevice?.address}")
             }else{
@@ -132,37 +138,26 @@ class MainActivity: FlutterActivity(){
         return blueToothOn
     }
 
-//    private fun addToPrintables(text: String, center: Boolean, bold: Boolean){
-//        if(center && bold){
-//            al.add(TextPrintable.Builder()
-//                    .setText(text)// title
-//                    .setAlignment(DefaultPrinter.ALIGNMENT_CENTER)
-//                    .setEmphasizedMode(DefaultPrinter.EMPHASIZED_MODE_BOLD)
-//                    .setNewLinesAfter(1)
-//                    .build())
-//        }else if(center && !bold){
-//            al.add(TextPrintable.Builder()
-//                    .setText(text)// title
-//                    .setAlignment(DefaultPrinter.ALIGNMENT_CENTER)
-//                    .setEmphasizedMode(DefaultPrinter.EMPHASIZED_MODE_NORMAL)
-//                    .setNewLinesAfter(1)
-//                    .build())
-//        }else if(!center && !bold){
-//            al.add(TextPrintable.Builder()
-//                    .setText(text)// title
-//                    .setAlignment(DefaultPrinter.ALIGNMENT_LEFT)
-//                    .setEmphasizedMode(DefaultPrinter.EMPHASIZED_MODE_NORMAL)
-//                    .setNewLinesAfter(1)
-//                    .build())
-//        }else{
-//            al.add(TextPrintable.Builder()
-//                    .setText(text)// title
-//                    .setAlignment(DefaultPrinter.ALIGNMENT_LEFT)
-//                    .setEmphasizedMode(DefaultPrinter.EMPHASIZED_MODE_NORMAL)
-//                    .setNewLinesAfter(1)
-//                    .build())
-//        }
-//
-//
-//    }
+    override fun run() {
+        var message: Message = Message()
+        try {
+            mBluetoothSocket = mBluetoothDevice
+                    ?.createRfcommSocketToServiceRecord(applicationUUID)
+            mBluetoothAdapter?.cancelDiscovery()
+            mBluetoothSocket?.connect()
+            var messageString = ""
+            message = mHandler!!.obtainMessage()
+            messageString = "good"
+            message.obj = messageString
+            mHandler!!.sendMessage(message)
+        }catch (eConnectException: IOException){
+            closeSocket(mBluetoothSocket!!)
+            var messageString = ""
+            message = mHandler!!.obtainMessage()
+            messageString = "bad"
+            message.obj = messageString
+            mHandler!!.sendMessage(message)
+        }
+    }
+
 }
