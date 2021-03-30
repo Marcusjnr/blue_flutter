@@ -24,6 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
   bluetooth_thermal_printer: ^0.0.4
+  provider: ^5.0.0
 
 
   # The following adds the Cupertino Icons font to your application.

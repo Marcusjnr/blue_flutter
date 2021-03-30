@@ -1,6 +1,8 @@
+import 'package:blue_flutter/app_provider.dart';
 import 'package:blue_flutter/list_activity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class MainActivity extends StatefulWidget {
   @override
@@ -17,7 +19,7 @@ class _MainActivityState extends State<MainActivity> {
 
       if(result == true){
 
-        printNative();
+       // printNative();
       }else{
         Navigator.push(
           context,
@@ -35,6 +37,18 @@ class _MainActivityState extends State<MainActivity> {
   }
 
   Future<void> printNative() async {
+    if(Provider.of<AppProvider>(context, listen: false).printerName.isEmpty
+        && Provider.of<AppProvider>(context, listen: false).printerAddress.isEmpty ){
+      Navigator.push(
+        context,
+        // ignore: always_specify_types
+        MaterialPageRoute(
+          builder: (context) => ListActivity(),
+        ),
+      );
+      return;
+    }
+    
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(
         'Printing',
@@ -55,7 +69,10 @@ class _MainActivityState extends State<MainActivity> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             MaterialButton(
               color: Colors.blue,

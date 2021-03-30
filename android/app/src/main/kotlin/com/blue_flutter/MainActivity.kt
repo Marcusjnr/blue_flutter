@@ -99,7 +99,12 @@ class MainActivity: FlutterActivity(), Runnable {
                 }
                 //result.success("name is ${mBluetoothDevice?.name} and address is ${mBluetoothDevice?.address}")
             }else if(call.method == "checkBluetoothDeviceConnected"){
-                result.success(isConnected(mBluetoothDevice!!))
+                val response = isConnected(mBluetoothDevice!!)
+               if(response == true){
+                   result.success(true)
+               }else{
+                   result.success(false)
+               }
             }else if(call.method == "print"){
                 p1()
             }else{

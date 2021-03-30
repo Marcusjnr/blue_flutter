@@ -1,6 +1,8 @@
+import 'package:blue_flutter/app_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bluetooth_thermal_printer/bluetooth_thermal_printer.dart';
+import 'package:provider/provider.dart';
 
 class ListActivity extends StatefulWidget {
   @override
@@ -99,6 +101,10 @@ class _ListActivityState extends State<ListActivity> {
         setState(() {
           progressBarVisible = false;
         });
+        Provider.of<AppProvider>(context, listen: false).updateNames(
+            address,
+            name
+        );
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
             'Connected',
