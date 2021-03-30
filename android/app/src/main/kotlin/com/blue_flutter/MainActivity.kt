@@ -47,11 +47,8 @@ class MainActivity: FlutterActivity(), Runnable {
                 }else{
                     if(!mBluetoothAdapter!!.isEnabled){
                         startActivityForResult(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), 1)
-                        if(bluetoothEnabled){
-                            result.success(true)
-                        }else{
-                            result.success(false)
-                        }
+                        result.success(true)
+
                     }
                 }
 

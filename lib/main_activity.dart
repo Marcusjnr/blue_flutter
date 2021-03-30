@@ -12,7 +12,7 @@ class MainActivity extends StatefulWidget {
 class _MainActivityState extends State<MainActivity> {
   static const platform = const MethodChannel('flutter.native/helper');
 
-  
+
   Future<void> printNative() async {
     if(Provider.of<AppProvider>(context, listen: false).printerName.isEmpty
         && Provider.of<AppProvider>(context, listen: false).printerAddress.isEmpty ){
